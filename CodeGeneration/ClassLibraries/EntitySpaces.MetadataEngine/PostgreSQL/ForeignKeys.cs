@@ -104,29 +104,61 @@ namespace EntitySpaces.MetadataEngine.PostgreSQL
                 if (metaData1.Rows.Count > 0)
                 {
                     string catalog = this.Table.Database.Name;
-                    string schema;
-                    string table;
+                    string primarySchema;
+                    string primaryTable;
+                    string foreignTable;
+                    string foreignSchema;
                     string[] cols = null;
                     string q;
 
+
                     string query =
-                        "SELECT  c.conname AS constraint_name, " +
-                             "t.relname AS table_name, " +
-                             "array_to_string(c.conkey, ' ') AS constraint_key, " +
-                             "t2.relname AS references_table, " +
-                             "array_to_string(c.confkey, ' ') AS fk_constraint_key " +
-                        "FROM pg_constraint c " +
-                        "LEFT JOIN pg_class t  ON c.conrelid  = t.oid " +
-                        "LEFT JOIN pg_class t2 ON c.confrelid = t2.oid " +
-                        "WHERE c.contype = 'f' and c.conname = ";
+                   "SELECT  c.conname AS constraint_name, " +
+                        "t.relname AS table_name, " +
+                        "array_to_string(c.conkey, ' ') AS constraint_key, " +
+                        "t2.relname AS references_table, " +
+                        "array_to_string(c.confkey, ' ') AS fk_constraint_key " +
+                   "FROM pg_constraint c " +
+                   "LEFT JOIN pg_class t  ON c.conrelid  = t.oid " +
+                   "LEFT JOIN pg_class t2 ON c.confrelid = t2.oid " +
+                   "WHERE c.contype = 'f' and c.conname = ";
+
+                    string newquery =
+                        "SELECT current_schema() AS \"schema\", current_catalog AS \"database\", \"pg_constraint\".confrelid::regclass::text AS \"primary_table_name\", \"pg_constraint\".conrelid::regclass::text AS \"foreign_table_name\",(string_to_array((string_to_array(pg_get_constraintdef(\"pg_constraint\".oid),'('))[2],')'))[1] AS \"foreign_column_name\", \"pg_constraint\".conindid::regclass::text AS \"constraint_name\", " +
+                        "TRIM((string_to_array(pg_get_constraintdef(\"pg_constraint\".oid), '('))[1]) AS \"constraint_type\",pg_get_constraintdef(\"pg_constraint\".oid) AS \"constraint_definition\" " +
+                        "FROM pg_constraint AS \"pg_constraint\" " +
+                        "JOIN pg_namespace AS \"pg_namespace\" ON \"pg_namespace\".oid = \"pg_constraint\".connamespace " +
+                        "WHERE \"pg_constraint\".contype IN('f') AND \"pg_namespace\".nspname = current_schema() AND \"pg_constraint\".confrelid::regclass::text IN('[PRIMARY_TABLE_NAME]')" +
+                        "and \"pg_constraint\".conname = '[KEY_NAME]'";
+
+
+                    string newQuery2 = "SELECT conrelid::regclass AS \"FK_Table\" " +
+        ", CASE WHEN pg_get_constraintdef(c.oid) LIKE 'FOREIGN KEY %' THEN substring(pg_get_constraintdef(c.oid), 14, position(')' in pg_get_constraintdef(c.oid)) - 14) END AS \"FK_Column\" " +
+        ", CASE WHEN pg_get_constraintdef(c.oid) LIKE 'FOREIGN KEY %' THEN substring(pg_get_constraintdef(c.oid), position(' REFERENCES ' in pg_get_constraintdef(c.oid))+12, position('(' in substring(pg_get_constraintdef(c.oid), 14)) - position(' REFERENCES ' in pg_get_constraintdef(c.oid)) + 1) END AS \"PK_Table\" " +
+        " ,CASE WHEN pg_get_constraintdef(c.oid) LIKE 'FOREIGN KEY %' THEN substring(pg_get_constraintdef(c.oid), position('(' in substring(pg_get_constraintdef(c.oid), 14))+14, position(')' in substring(pg_get_constraintdef(c.oid), position('(' in substring(pg_get_constraintdef(c.oid), 14)) + 14)) - 1) END AS \"PK_Column\" " +
+        "FROM pg_constraint c " +
+        "JOIN   pg_namespace n ON n.oid = c.connamespace " +
+        "WHERE contype IN('f', 'p ') " +
+        "AND pg_get_constraintdef(c.oid) LIKE 'FOREIGN KEY %' " +
+        "AND c.conname = '[KEY_NAME]' " +
+        "ORDER BY pg_get_constraintdef(c.oid), conrelid::regclass::text, contype DESC";
+
+                    string newQuery3 = "SELECT c.conname, (select  r.relname from pg_class r where r.oid = c.confrelid) as primary_table, " +
+                    " a.attname as PK_COLUMN, " +
+                    " (select r.relname from pg_class r where r.oid = c.conrelid) as referencing_table, " +
+                    " UNNEST((select array_agg(attname) from pg_attribute where attrelid = c.conrelid and array[attnum] <@ c.conkey)) as FK_COLUMN, " +
+                    " pg_get_constraintdef(c.oid) contraint_sql " +
+                    " FROM pg_constraint c join pg_attribute a on c.confrelid = a.attrelid and a.attnum = ANY(confkey) " +
+                    " WHERE c.conname = '[KEY_NAME]' ";
+
 
                     foreach (ForeignKey key in this)
                     {
                         //------------------------------------------------
                         // Primary
                         //------------------------------------------------
-                        schema = key._row["PK_TABLE_SCHEMA"] as string;
-                        table  = key._row["PK_TABLE_NAME"] as string;
+                        primarySchema = key._row["PK_TABLE_SCHEMA"] as string;
+                        primaryTable  = key._row["PK_TABLE_NAME"] as string;
 
                         string keyName = string.Empty;
 
@@ -139,22 +171,21 @@ namespace EntitySpaces.MetadataEngine.PostgreSQL
                             keyName = key.Name;
                         }
 
-                        q = query;
-                        q += "'" + keyName + "'";
+                        q = newQuery3;
+                        q = q.Replace("[PRIMARY_TABLE_NAME]", primaryTable).Replace("[KEY_NAME]", keyName);
 
                         DataTable metaData = new DataTable();
                         adapter = PostgreSQLDatabases.CreateAdapter(q, cn);
 
                         adapter.Fill(metaData);
 
-                        string[] ordinals = ((string)metaData.Rows[0][4]).Split(' ');
-
-                        foreach (string ordinal in ordinals)
+                        foreach (DataRow row in metaData.Rows)
                         {
-                            int c = key.PrimaryTable.Columns.Count;
-                            string colName = key.PrimaryTable.Columns[Convert.ToInt32(ordinal) - 1].Name;
-                            key.AddForeignColumn(catalog, "", table, colName, true);
+                            string colName = row["PK_COLUMN"].ToString().Trim();
+                            key.AddForeignColumn(catalog, "", primaryTable, colName, true);
                         }
+
+                  
 
                         //for (int i = 0; i < cols.GetLength(0); i++)
                         //{
@@ -164,16 +195,13 @@ namespace EntitySpaces.MetadataEngine.PostgreSQL
                         //------------------------------------------------
                         // Foreign
                         //------------------------------------------------
-                        schema = key._row["FK_TABLE_SCHEMA"] as string;
-                        table  = key._row["FK_TABLE_NAME"] as string;
+                        foreignSchema = key._row["FK_TABLE_SCHEMA"] as string;
+                        foreignTable  = key._row["FK_TABLE_NAME"] as string;
 
-                        ordinals = ((string)metaData.Rows[0][2]).Split(' ');
-
-                        foreach (string ordinal in ordinals)
-                        {
-                            int c = key.ForeignTable.Columns.Count;
-                            string colName = key.ForeignTable.Columns[Convert.ToInt32(ordinal) - 1].Name;
-                            key.AddForeignColumn(catalog, "", table, colName, false);
+                        foreach (DataRow row in metaData.Rows)
+                        {                        
+                            string colName = row["FK_COLUMN"].ToString().Trim(); 
+                            key.AddForeignColumn(catalog, "", foreignTable, colName, false);
                         }
                     }
                 }

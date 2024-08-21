@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,10 +10,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>EntitySpaces</RootNamespace>
     <AssemblyName>EntitySpaces</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\StrongNameKey\EntitySpaces.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>EntitySpaces.pfx</AssemblyOriginatorKeyFile>
     <ApplicationIcon>esIcon.ico</ApplicationIcon>
     <PublishUrl>http://localhost/EntitySpaces/</PublishUrl>
     <Install>true</Install>
@@ -30,6 +30,12 @@
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,6 +46,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -48,6 +56,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -56,6 +66,8 @@
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -64,14 +76,47 @@
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql, Version=4.1.14.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>packages\Npgsql.4.1.14\lib\net461\Npgsql.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Runtime.CompilerServices.Unsafe.4.6.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Text.Encodings.Web.4.6.0\lib\netstandard2.0\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Text.Json.4.6.0\lib\net461\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Threading.Tasks.Extensions.4.5.3\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -110,14 +155,13 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="..\StrongNameKey\EntitySpaces.snk">
-      <Link>EntitySpaces.snk</Link>
-    </None>
     <Compile Include="Resource1.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resource1.resx</DependentUpon>
     </Compile>
+    <None Include="app.config" />
+    <None Include="EntitySpaces.pfx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ClassLibraries\EntitySpaces.AddIn.TemplateUI\EntitySpaces.AddIn.TemplateUI.csproj">
@@ -125,7 +169,7 @@
       <Name>EntitySpaces.AddIn.TemplateUI</Name>
     </ProjectReference>
     <ProjectReference Include="..\ClassLibraries\EntitySpaces.AddIn\EntitySpaces.AddIn.csproj">
-      <Project>{72548163-B3F2-407A-88C2-DD1DED62005D}</Project>
+      <Project>{72548163-b3f2-407a-88c2-dd1ded62005d}</Project>
       <Name>EntitySpaces.AddIn</Name>
     </ProjectReference>
     <ProjectReference Include="..\ClassLibraries\EntitySpaces.CodeGenerator\EntitySpaces.CodeGenerator.csproj">
@@ -144,20 +188,8 @@
       <Project>{93AD680C-1631-48D6-969D-090D2940C591}</Project>
       <Name>EntitySpaces.MetadataEngine.SQLite</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ClassLibraries\EntitySpaces.MetadataEngine.Sybase\EntitySpaces.MetadataEngine.Sybase.csproj">
-      <Project>{8FFD352B-909B-4A95-B979-7206E1776340}</Project>
-      <Name>EntitySpaces.MetadataEngine.Sybase</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ClassLibraries\EntitySpaces.MetadataEngine.VistaDB4\EntitySpaces.MetadataEngine.VistaDB4.csproj">
-      <Project>{5C275B88-3F0A-43DF-8956-D6BF0478463F}</Project>
-      <Name>EntitySpaces.MetadataEngine.VistaDB4</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ClassLibraries\EntitySpaces.MetadataEngine.VistaDB\EntitySpaces.MetadataEngine.VistaDB.csproj">
-      <Project>{33C81FD4-E4A7-4D18-96FC-89EE447004EB}</Project>
-      <Name>EntitySpaces.MetadataEngine.VistaDB</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ClassLibraries\EntitySpaces.MetadataEngine\EntitySpaces.MetadataEngine.csproj">
-      <Project>{72BEAB1C-B55F-4F0E-89AF-17F71E74A452}</Project>
+      <Project>{72beab1c-b55f-4f0e-89af-17f71e74a452}</Project>
       <Name>EntitySpaces.MetadataEngine</Name>
     </ProjectReference>
     <ProjectReference Include="..\ClassLibraries\EntitySpaces.TemplateUI\EntitySpaces.TemplateUI.csproj">
@@ -167,6 +199,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="esIcon.ico" />
+    <Content Include="logo.png" />
+    <None Include="packages.config" />
+    <None Include="Resources\%24this.Icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -200,9 +235,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
