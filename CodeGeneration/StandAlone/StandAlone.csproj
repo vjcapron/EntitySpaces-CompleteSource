@@ -199,6 +199,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="esIcon.ico" />
+    <Content Include="esUserData.xml" />
     <Content Include="logo.png" />
     <None Include="packages.config" />
     <None Include="Resources\%24this.Icon.ico" />

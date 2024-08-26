@@ -1,0 +1,20 @@
+<esUserData Version="2012.1.0930.0">
+  <Drivers>
+    <Driver Name="POSTGRESQL">
+      <Databases>
+        <Database Name="banyan">
+          <Tables>
+            <Table Name="property" Alias="BanyanProperty" />
+            <Table Name="lease" Alias="Lease" />
+            <Table Name="unit" Alias="Unit" />
+            <Table Name="billing_fee">
+              <Columns>
+                <Column Name="type" Alias="BillingFeeType" />
+              </Columns>
+            </Table>
+          </Tables>
+        </Database>
+      </Databases>
+    </Driver>
+  </Drivers>
+</esUserData>
