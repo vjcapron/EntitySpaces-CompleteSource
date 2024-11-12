@@ -64,7 +64,13 @@ namespace EntitySpaces.Npgsql2Provider
                             NpgsqlDbType dbType = Cache.NativeTypeToDbType(nativeType);
 
                             param1 = new NpgsqlParameter(Delimiters.Param + col.PropertyName, dbType, 0, col.Name);
+                            param1.ParameterName = Delimiters.Param + col.PropertyName;
                             param1.SourceColumn = col.Name;
+                            param1.DataTypeName = nativeType;
+                            if (dbType != NpgsqlDbType.Unknown)
+                            {
+                                param1.NpgsqlDbType = dbType;
+                            }
 
                             switch (dbType)
                             {
@@ -85,7 +91,7 @@ namespace EntitySpaces.Npgsql2Provider
                                         param1.Size = (int)col.CharacterMaxLength;
                                     }
 
-                                    break;
+                                    break;                                
                             }
                             types[col.Name] = param1;
                         }
@@ -129,9 +135,9 @@ namespace EntitySpaces.Npgsql2Provider
                 case "numeric": return NpgsqlDbType.Numeric;
                 case "bpchar": return NpgsqlDbType.Char;
                 case "uuid": return NpgsqlDbType.Uuid;
-
+                
                 default:
-                    return NpgsqlDbType.Integer;
+                    return NpgsqlDbType.Unknown;
             }
         }
 
