@@ -46,7 +46,7 @@ namespace EntitySpaces.MetadataEngine
     {
         public esSettings()
         {
-            // this.SetDefaultSettings();
+            //SetDefaultSettings();
         }
 
         #region Properties
@@ -547,8 +547,22 @@ namespace EntitySpaces.MetadataEngine
                     break;
                 }
             }
-
+            if (info == null)
+            {
+                string pathAndFileName = AppDataPath + @"\esSettings.xml";
+                var settings = Load(pathAndFileName);
+                this.DriverInfoCollection = settings.DriverInfoCollection;
+                foreach (esSettingsDriverInfo driverInfo in DriverInfoCollection)
+                {
+                    if (driverInfo.Driver == driver)
+                    {
+                        info = driverInfo;
+                        break;
+                    }
+                }                
+            }
             return info;
+
         }
 
         #endregion
@@ -616,6 +630,7 @@ namespace EntitySpaces.MetadataEngine
             if (!Directory.Exists(TemplateCachePath))
                 Directory.CreateDirectory(TemplateCachePath);
 
+            
             if (settings.DriverInfoCollection == null || settings.driverInfoCollection.Count == 0)
             {
                 settings.DriverInfoCollection.Add(new esSettingsDriverInfo() { Driver = settings.Driver, ConnectionString = settings.ConnectionString });

@@ -57,7 +57,7 @@ namespace EntitySpaces.MetadataEngine
 		public Root(esSettings settings)
 		{
 			Reset();
-            this.settings = settings;
+            this.settings = settings;                  
 		}
 
         public esPlugIn esPlugIn
